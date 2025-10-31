@@ -50,4 +50,15 @@ export default function Audit() {
             <input required name="email" type="email" placeholder={t.form.email} className="w-full rounded-xl border p-3" />
             <input required name="channel_url" placeholder={t.form.url} className="w-full rounded-xl border p-3" />
             <input name="niche" placeholder={t.form.niche} className="w-full rounded-xl border p-3" />
-            <input name="goal" pl
+            <input name="goal" placeholder={t.form.goal} className="w-full rounded-xl border p-3" />
+
+            <button className="px-5 py-3 rounded-2xl bg-black text-white w-fit">
+              {t.form.submit}
+            </button>
+            <p className="text-xs text-slate-500">{t.note}</p>
+          </form>
+        </div>
+      </section>
+    </Layout>
+  );
+}
