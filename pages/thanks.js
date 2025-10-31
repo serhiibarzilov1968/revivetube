@@ -1,6 +1,5 @@
-import Layout from "@/components/Layout";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import "../styles/globals.css";
+import Layout from "../components/Layout";
 
 export default function Thanks() {
   const { query } = useRouter();
