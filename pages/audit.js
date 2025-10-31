@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 export default function Audit() {
   const { query } = useRouter();
-  const lang = (query.lang || "ru");
+  const lang = query.lang || "ru";
 
   const t = {
     ru: {
@@ -17,7 +17,8 @@ export default function Audit() {
         goal: "Цель: рост, лиды, монетизация... (опционально)",
         submit: "Отправить запрос",
       },
-      note: "Режим по умолчанию — Self-Serve. Если захотите, мы применим правки за вас на следующем шаге."
+      note:
+        "Режим по умолчанию — Self-Serve. Если захотите, мы применим правки за вас на следующем шаге.",
     },
     en: {
       h1: "Channel Audit",
@@ -29,8 +30,9 @@ export default function Audit() {
         goal: "Goal: growth, leads, monetization... (optional)",
         submit: "Submit request",
       },
-      note: "Default mode — Self-Serve. If you wish, we can apply changes for you in the next step."
-    }
+      note:
+        "Default mode — Self-Serve. If you wish, we can apply changes for you in the next step.",
+    },
   }[lang];
 
   return (
@@ -45,12 +47,37 @@ export default function Audit() {
             {/* язык интерфейса (для текста автоответа) */}
             <input type="hidden" name="lang" value={lang} />
             {/* honeypot от ботов (пустое скрытое поле) */}
-            <input type="text" name="hp" style={{ display: "none" }} tabIndex="-1" autoComplete="off" />
+            <input
+              type="text"
+              name="hp"
+              style={{ display: "none" }}
+              tabIndex={-1}
+              autoComplete="off"
+            />
 
-            <input required name="email" type="email" placeholder={t.form.email} className="w-full rounded-xl border p-3" />
-            <input required name="channel_url" placeholder={t.form.url} className="w-full rounded-xl border p-3" />
-            <input name="niche" placeholder={t.form.niche} className="w-full rounded-xl border p-3" />
-            <input name="goal" placeholder={t.form.goal} className="w-full rounded-xl border p-3" />
+            <input
+              required
+              name="email"
+              type="email"
+              placeholder={t.form.email}
+              className="w-full rounded-xl border p-3"
+            />
+            <input
+              required
+              name="channel_url"
+              placeholder={t.form.url}
+              className="w-full rounded-xl border p-3"
+            />
+            <input
+              name="niche"
+              placeholder={t.form.niche}
+              className="w-full rounded-xl border p-3"
+            />
+            <input
+              name="goal"
+              placeholder={t.form.goal}
+              className="w-full rounded-xl border p-3"
+            />
 
             <button className="px-5 py-3 rounded-2xl bg-black text-white w-fit">
               {t.form.submit}
