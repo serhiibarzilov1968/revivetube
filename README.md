@@ -1,11 +1,13 @@
 # ReviveTube — MVP
 
-Запуск:
-1) npm install
-2) npm run dev
+## Быстрый старт
+1. `npm i`
+2. `npm run dev`
 
-Деплой на Vercel: импортируйте репозиторий.
-
-Форма аудита отправляет заявки через https://formsubmit.co на адрес serhiibarzilov@gmail.com.
-После подключения домена замените `_next` в pages/audit.js на ваш URL, например:
-`https://revivetube.app/thanks?lang=ru`
+## Vercel Env
+SMTP_HOST=mail.privateemail.com
+SMTP_PORT=465
+SMTP_USER=ops@revivetube.app
+SMTP_PASS=<password>
+SMTP_SECURE=true
+NEXT_PUBLIC_SITE_URL=https://revivetube.app
