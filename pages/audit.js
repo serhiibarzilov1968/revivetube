@@ -1,10 +1,9 @@
-// pages/audit.js
-import "../styles/globals.css";
-import Layout from "../components/Layout";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function Audit() {
-  const { query } = useRouter();
-  const lang = query.lang || "ru";
+  const { query, push } = useRouter();
+  const lang = (query.lang || "ru");
 
   const t = {
     ru: {
@@ -35,57 +34,58 @@ export default function Audit() {
     },
   }[lang];
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const fd = new FormData(e.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+    try {
+      const r = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (r.status === 303 || r.ok) {
+        const loc = r.headers.get("Location");
+        if (loc) { window.location.href = loc; }
+        else { push(`/thanks?lang=${lang}`); }
+      } else {
+        const txt = await r.text();
+        setError(txt || "Ошибка отправки");
+      }
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <Layout>
-      <section className="py-16">
-        <div className="max-w-3xl mx-auto px-4">
-          <h1 className="text-3xl font-bold">{t.h1}</h1>
-          <p className="mt-2 text-slate-600">{t.p}</p>
+    <section className="py-16">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="text-3xl font-bold">{t.h1}</h1>
+        <p className="mt-2 text-slate-600">{t.p}</p>
 
-          {/* Без FormSubmit — отправляем в собственный API-роут */}
-          <form className="mt-8 grid gap-4" action="/api/audit" method="POST">
-            {/* язык интерфейса (для текста автоответа) */}
-            <input type="hidden" name="lang" value={lang} />
-            {/* honeypot от ботов (пустое скрытое поле) */}
-            <input
-              type="text"
-              name="hp"
-              style={{ display: "none" }}
-              tabIndex={-1}
-              autoComplete="off"
-            />
+        <form className="mt-8 grid gap-4" onSubmit={onSubmit}>
+          <input type="hidden" name="lang" value={lang} />
+          <input type="text" name="hp" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
 
-            <input
-              required
-              name="email"
-              type="email"
-              placeholder={t.form.email}
-              className="w-full rounded-xl border p-3"
-            />
-            <input
-              required
-              name="channel_url"
-              placeholder={t.form.url}
-              className="w-full rounded-xl border p-3"
-            />
-            <input
-              name="niche"
-              placeholder={t.form.niche}
-              className="w-full rounded-xl border p-3"
-            />
-            <input
-              name="goal"
-              placeholder={t.form.goal}
-              className="w-full rounded-xl border p-3"
-            />
+          <input required name="email" type="email" placeholder={t.form.email} className="w-full rounded-xl border p-3" />
+          <input required name="channel_url" placeholder={t.form.url} className="w-full rounded-xl border p-3" />
+          <input name="niche" placeholder={t.form.niche} className="w-full rounded-xl border p-3" />
+          <input name="goal" placeholder={t.form.goal} className="w-full rounded-xl border p-3" />
 
-            <button className="px-5 py-3 rounded-2xl bg-black text-white w-fit">
-              {t.form.submit}
-            </button>
-            <p className="text-xs text-slate-500">{t.note}</p>
-          </form>
-        </div>
-      </section>
-    </Layout>
+          <button disabled={loading} className="px-5 py-3 rounded-2xl bg-black text-white w-fit disabled:opacity-60">
+            {loading ? "Отправка..." : t.form.submit}
+          </button>
+          <p className="text-xs text-slate-500">{t.note}</p>
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+        </form>
+      </div>
+    </section>
   );
 }
