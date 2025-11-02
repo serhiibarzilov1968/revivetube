@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const SERVICES = [
   { key: "audit",     title: "Аудит канала",             price: 9.9,  desc: "Анализ ошибок, приоритеты и план на 7 дней." },
+  { key: "audit-pro", title: "Развёрнутый аудит (30 дней)", price: 24.9, desc: "Глубокий анализ: канал, ниша, конкуренты, SEO и план на 30 дней." },
   { key: "branding",  title: "Оформление канала",        price: 14.9, desc: "Баннер + логотип + аватар по гайдам YouTube." },
   { key: "seo-fix",   title: "SEO-правки канала",        price: 9.9,  desc: "Описание, теги, ключевые слова, базовые метаданные." },
   { key: "shorts",    title: "Шортс из вашего контента", price: 6.9,  desc: "Сделаем 1 Shorts из видео/текста/аудио." },
@@ -53,3 +54,4 @@ export default function Services() {
     </section>
   );
 }
+
