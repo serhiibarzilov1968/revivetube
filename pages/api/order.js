@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 
 const TITLES = {
   audit: "Аудит канала",
+  "audit-pro": "Развёрнутый аудит (30 дней)",
   branding: "Оформление канала",
   "seo-fix": "SEO-правки канала",
   shorts: "Шортс из вашего контента",
@@ -86,3 +87,4 @@ STATUS: PENDING_PAYMENT (PayPal.Me)`,
     return res.status(500).send("Mail error");
   }
 }
+
