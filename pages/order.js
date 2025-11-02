@@ -67,6 +67,11 @@ export default function Order() {
         <p className="mt-2 text-slate-600">
           Сервис работает автоматически. Заполните поля — заказ поступит в работу. Далее оплатите через PayPal.Me.
         </p>
+        {service === "audit-pro" && (
+  <p className="mt-3 text-slate-600 text-sm">
+    Глубокий анализ канала, ниши и SEO. Персональный план продвижения на 30 дней.
+  </p>
+)}
 
         <form className="mt-8 grid gap-4" onSubmit={onSubmit}>
           {/* системные */}
@@ -117,4 +122,5 @@ export default function Order() {
     </section>
   );
 }
+
 
