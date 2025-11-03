@@ -22,6 +22,7 @@ const TITLES = {
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
   try {
+    // ВАЖНО: добавили prompt в распаковку, и дефолты оставили как были
     const {
       service = "audit",
       email,
@@ -31,9 +32,11 @@ export default async function handler(req, res) {
       note = "",
       lang = "ru",
       price = "",
-      hp = ""
+      hp = "",
+      prompt = "" // <-- вот оно: вопрос/тема для Мемо-Shorts
     } = req.body || {};
 
+    // простой honeypot
     if (hp) return res.status(200).send("OK");
     if (!email || !channel_url) return res.status(400).send("Missing required fields");
 
@@ -53,17 +56,19 @@ export default async function handler(req, res) {
       to: process.env.SMTP_USER,
       subject: `ORDER: ${title} — ${channel_url}`,
       text: `SERVICE: ${service}
+TITLE: ${title}
 PRICE: ${price} €
 EMAIL: ${email}
 CHANNEL: ${channel_url}
 VIDEO: ${video_url}
+PROMPT: ${prompt}        // <-- добавили вывод вопроса/темы
 BRAND_NOTE: ${brand_note}
 NOTE: ${note}
 TIME: ${now}
-STATUS: PENDING_PAYMENT (PayPal.Me)`,
+STATUS: PENDING_PAYMENT`,
     });
 
-    // Автоответ клиенту
+    // Автоответ клиенту (без изменений в логике)
     await transporter.sendMail({
       from: `ReviveTube System <${process.env.SMTP_USER}>`,
       to: email,
@@ -73,10 +78,25 @@ STATUS: PENDING_PAYMENT (PayPal.Me)`,
 Стоимость: ${price} €
 Канал: ${channel_url}
 
-Оплатите, пожалуйста, по ссылке PayPal.Me на странице заказа.
+Если услуга платная — оплатите, пожалуйста, по ссылке на странице заказа.
 После оплаты вы получите подтверждение от системы.`,
       replyTo: process.env.SMTP_USER,
     });
+
+    // (Опционально) запись в Google Таблицу через Apps Script Web App
+    try {
+      if (process.env.GSHEET_WEBAPP_URL) {
+        await fetch(process.env.GSHEET_WEBAPP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            service, price, email, channel_url, video_url, brand_note, note, prompt
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("GSHEET append failed:", e);
+    }
 
     const base = process.env.NEXT_PUBLIC_SITE_URL || "";
     const thanks = base ? `${base}/thanks?lang=${lang}` : `/thanks?lang=${lang}`;
@@ -87,5 +107,3 @@ STATUS: PENDING_PAYMENT (PayPal.Me)`,
     return res.status(500).send("Mail error");
   }
 }
-
-
