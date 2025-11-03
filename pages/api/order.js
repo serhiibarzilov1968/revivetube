@@ -1,13 +1,15 @@
+// pages/api/order.js
 import nodemailer from "nodemailer";
 
 const TITLES = {
-  "memo-shorts": "Мемо-Shorts (ИИ-памятка)",
+  // Базовые
+  audit: "Мемо-Shorts (ИИ-памятка)",          // бывший "Аудит канала"
   "audit-pro": "Развёрнутый аудит (30 дней)",
-  branding: "Оформление канала",
-  "seo-fix": "SEO-правки канала",
+  "memo-shorts": "Мемо-Shorts (ИИ-памятка)",
   shorts: "Шортс из вашего контента",
   video: "Работа с видео",
   manager: "Ведение (менеджер)",
+  // Доп. модули
   banner: "Новый баннер",
   logo: "Новый логотип",
   avatar: "Новый аватар",
@@ -22,7 +24,7 @@ const TITLES = {
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
   try {
-    // ВАЖНО: добавили prompt в распаковку, и дефолты оставили как были
+    // добавили prompt
     const {
       service = "audit",
       email,
@@ -33,10 +35,10 @@ export default async function handler(req, res) {
       lang = "ru",
       price = "",
       hp = "",
-      prompt = "" // <-- вот оно: вопрос/тема для Мемо-Shorts
+      prompt = ""
     } = req.body || {};
 
-    // простой honeypot
+    // honeypot
     if (hp) return res.status(200).send("OK");
     if (!email || !channel_url) return res.status(400).send("Missing required fields");
 
@@ -50,7 +52,7 @@ export default async function handler(req, res) {
     const title = TITLES[service] || service;
     const now = new Date().toISOString();
 
-    // Уведомление в ops
+    // Письмо в ops
     await transporter.sendMail({
       from: `ReviveTube System <${process.env.SMTP_USER}>`,
       to: process.env.SMTP_USER,
@@ -61,14 +63,14 @@ PRICE: ${price} €
 EMAIL: ${email}
 CHANNEL: ${channel_url}
 VIDEO: ${video_url}
-PROMPT: ${prompt}        // <-- добавили вывод вопроса/темы
+PROMPT: ${prompt}
 BRAND_NOTE: ${brand_note}
 NOTE: ${note}
 TIME: ${now}
 STATUS: PENDING_PAYMENT`,
     });
 
-    // Автоответ клиенту (без изменений в логике)
+    // Автоответ клиенту
     await transporter.sendMail({
       from: `ReviveTube System <${process.env.SMTP_USER}>`,
       to: email,
@@ -83,21 +85,28 @@ STATUS: PENDING_PAYMENT`,
       replyTo: process.env.SMTP_USER,
     });
 
-    // (Опционально) запись в Google Таблицу через Apps Script Web App
+    // --- Отправка в Google Sheets через Make.com webhook ---
     try {
-      if (process.env.GSHEET_WEBAPP_URL) {
-        await fetch(process.env.GSHEET_WEBAPP_URL, {
+      if (process.env.GSHEET_WEBHOOK_URL) {
+        const headers = { "Content-Type": "application/json" };
+        // если хочешь простой секрет-ключ — добавь в Vercel WEBHOOK_KEY и раскомментируй:
+        // if (process.env.WEBHOOK_KEY) headers["X-RT-Key"] = process.env.WEBHOOK_KEY;
+
+        await fetch(process.env.GSHEET_WEBHOOK_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
-            service, price, email, channel_url, video_url, brand_note, note, prompt
+            timestamp: now,
+            service, price, email, channel_url, video_url, brand_note, note, prompt,
+            status: "NEW",
           }),
         });
       }
     } catch (e) {
-      console.error("GSHEET append failed:", e);
+      console.error("GSHEET webhook failed:", e);
     }
 
+    // Редирект на спасибо
     const base = process.env.NEXT_PUBLIC_SITE_URL || "";
     const thanks = base ? `${base}/thanks?lang=${lang}` : `/thanks?lang=${lang}`;
     res.setHeader("Location", thanks);
