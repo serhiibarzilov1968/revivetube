@@ -85,6 +85,12 @@ export default function Order() {
           <input required name="channel_url" placeholder="Ссылка на канал" className="w-full rounded-xl border p-3" />
 
           {/* по услуге */}
+          {service === "audit" && (
+          <input
+          name="prompt"
+          placeholder="Ваш вопрос/тема для Мемо-Shorts"
+          className="w-full rounded-xl border p-3" />
+          )}
           {service === "shorts" && (
             <input name="video_url" placeholder="Ссылка на исходное видео/текст/аудио" className="w-full rounded-xl border p-3" />
           )}
@@ -122,6 +128,7 @@ export default function Order() {
     </section>
   );
 }
+
 
 
 
