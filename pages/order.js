@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 
 const NAMES = {
-  audit: "Аудит канала",
+  "memo-shorts": "Мемо-Shorts (ИИ-памятка)",
   "audit-pro": "Развёрнутый аудит (30 дней)",
   branding: "Оформление канала",
   "seo-fix": "SEO-правки канала",
@@ -122,5 +122,6 @@ export default function Order() {
     </section>
   );
 }
+
 
 
