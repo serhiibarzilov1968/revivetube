@@ -63,7 +63,7 @@ export default async function handler(req, res) {
       subject: `ORDER: ${title} — ${channel_url}`,
       text: `SERVICE: ${service}
 TITLE: ${title}
-PRICE: ${price} €
+PRICE: ${fmt(price)}
 EMAIL: ${email}
 CHANNEL: ${channel_url}
 VIDEO: ${video_url}
@@ -81,7 +81,7 @@ STATUS: PENDING_PAYMENT`,
       subject: `ReviveTube — заявка принята: ${title}`,
       text: `Ваша заявка принята автоматическим сервисом ReviveTube.
 Услуга: ${title}
-Стоимость: ${price} €
+Стоимость: ${fmt(price)}
 Канал: ${channel_url}
 
 Если услуга платная — оплатите, пожалуйста, по ссылке на странице заказа.
@@ -120,4 +120,5 @@ STATUS: PENDING_PAYMENT`,
     return res.status(500).send("Mail error");
   }
 }
+
 
