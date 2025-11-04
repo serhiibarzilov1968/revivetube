@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+const CURRENCY_SIGN = process.env.NEXT_PUBLIC_CURRENCY_SIGN || "$";
 const SERVICES = [
   { key: "memo-shorts", title: "Мемо-Shorts (ИИ-памятка)",   price: 19.9,   desc: "Сформируйте вопрос — получите вертикальный шортс с ИИ-озвучкой и титрами." },
   { key: "audit-pro", title: "Развёрнутый аудит (30 дней)", price: 24.9, desc: "Глубокий анализ: канал, ниша, конкуренты, SEO и план на 30 дней." },
@@ -54,5 +55,6 @@ export default function Services() {
     </section>
   );
 }
+
 
 
