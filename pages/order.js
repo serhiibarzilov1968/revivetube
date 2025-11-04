@@ -24,6 +24,8 @@ const NAMES = {
 export default function Order() {
   const { query, push } = useRouter();
   const service = String(query.service || "audit");
+  const CURRENCY_CODE = "USD"; // или "EUR", если понадобится евро
+
   const price = Number(query.price || 9.9);
   const paypal = process.env.NEXT_PUBLIC_PAYPAL_ME || "";
 
@@ -44,10 +46,12 @@ export default function Order() {
         body: JSON.stringify(data),
       });
       // открываем PayPal в новой вкладке (оплата вручную подтверждается тобой)
-      if (paypal) {
-        const payUrl = `${paypal}/${price}`;
-        window.open(payUrl, "_blank");
-      }
+      if (paypal && Number(price) > 0) {
+  const numeric = String(price).replace(/[^\d.]/g, ""); // на всякий случай
+  const payUrl = `${paypal}/${numeric}${CURRENCY_CODE}`; // <-- добавили код валюты
+  window.open(payUrl, "_blank");
+}
+
       if (r.ok) {
         push(`/thanks?lang=ru`);
       } else {
@@ -107,15 +111,17 @@ export default function Order() {
             <button disabled={loading} className="px-5 py-3 rounded-2xl bg-black text-white disabled:opacity-60">
               Отправить и оплатить
             </button>
-            {paypal && (
-              <a
-                href={`${paypal}/${price}`}
-                target="_blank" rel="noopener noreferrer"
-                className="px-5 py-3 rounded-2xl border"
-              >
-                Оплатить отдельно
-              </a>
-            )}
+            {paypal && Number(price) > 0 && (
+  <a
+    href={`${paypal}/${String(price).replace(/[^\d.]/g, "")}${CURRENCY_CODE}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="px-5 py-3 rounded-2xl border"
+  >
+    Оплатить отдельно
+  </a>
+)}
+
           </div>
 
           <p className="text-xs text-slate-500">
@@ -128,6 +134,7 @@ export default function Order() {
     </section>
   );
 }
+
 
 
 
