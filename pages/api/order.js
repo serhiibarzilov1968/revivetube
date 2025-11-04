@@ -1,6 +1,10 @@
 // pages/api/order.js
 import nodemailer from "nodemailer";
 
+const CURRENCY_SIGN = process.env.NEXT_PUBLIC_CURRENCY_SIGN || "$";
+const CURRENCY_CODE = process.env.NEXT_PUBLIC_CURRENCY_CODE || "USD";
+const fmt = (p) => `${CURRENCY_SIGN}${Number(p || 0).toFixed(2)} ${CURRENCY_CODE}`;
+
 const TITLES = {
   // Базовые
   audit: "Мемо-Shorts (ИИ-памятка)",          // бывший "Аудит канала"
@@ -116,3 +120,4 @@ STATUS: PENDING_PAYMENT`,
     return res.status(500).send("Mail error");
   }
 }
+
