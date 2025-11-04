@@ -24,7 +24,8 @@ const NAMES = {
 export default function Order() {
   const { query, push } = useRouter();
   const service = String(query.service || "audit");
-  const CURRENCY_CODE = "USD"; // или "EUR", если понадобится евро
+  const CURRENCY_CODE = process.env.NEXT_PUBLIC_CURRENCY_CODE || "USD";
+  const CURRENCY_SIGN = process.env.NEXT_PUBLIC_CURRENCY_SIGN || "$";
 
   const price = Number(query.price || 9.9);
   const paypal = process.env.NEXT_PUBLIC_PAYPAL_ME || "";
@@ -134,6 +135,7 @@ export default function Order() {
     </section>
   );
 }
+
 
 
 
