@@ -36,7 +36,9 @@ export default function Services() {
                 <p className="text-slate-600 mt-2 text-sm">{s.desc}</p>
               </div>
               <div className="mt-4 flex items-center justify-between">
-                <div className="text-base font-semibold">{s.price.toFixed(2)} €</div>
+                <div className="text-base font-semibold">
+                 {CURRENCY_SIGN}{s.price.toFixed(2)}
+                </div>
                 <Link
                   href={`/order?service=${s.key}&price=${s.price}`}
                   className="px-4 py-2 rounded-xl bg-black text-white"
@@ -55,6 +57,7 @@ export default function Services() {
     </section>
   );
 }
+
 
 
 
