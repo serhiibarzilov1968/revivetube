@@ -17,7 +17,7 @@ export default function Audit() {
         submit: "Отправить запрос",
       },
       note:
-        "Режим по умолчанию — Self-Serve. Если захотите, мы применим правки за вас на следующем шаге.",
+        "Automatic YouTube channel promotion service",
     },
     en: {
       h1: "Channel Audit",
