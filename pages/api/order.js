@@ -114,11 +114,12 @@ STATUS: PENDING_PAYMENT`,
     const base = process.env.NEXT_PUBLIC_SITE_URL || "";
     const thanks = base ? `${base}/thanks?lang=${lang}` : `/thanks?lang=${lang}`;
     res.setHeader("Location", thanks);
-    return res.status(303).end();
+    return res.status(200).json({ ok: true, redirect: `/thanks?lang=${lang}` });
   } catch (e) {
     console.error(e);
     return res.status(500).send("Mail error");
   }
 }
+
 
 
