@@ -30,7 +30,7 @@ export default function Audit() {
         submit: "Submit request",
       },
       note:
-        "Default mode — Self-Serve. If you wish, we can apply changes for you in the next step.",
+        "",
     },
   }[lang];
 
@@ -68,7 +68,7 @@ export default function Audit() {
     <section className="py-16">
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold">{t.h1}</h1>
-        <p className="mt-2 text-slate-600">{t.p}</p>
+        {/* <p className="text-xs text-slate-500">{t.note}</p> */}
 
         <form className="mt-8 grid gap-4" onSubmit={onSubmit}>
           <input type="hidden" name="lang" value={lang} />
