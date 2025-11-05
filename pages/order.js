@@ -40,24 +40,35 @@ export default function Order() {
     setLoading(true); setError("");
     const data = Object.fromEntries(new FormData(e.currentTarget).entries());
     try {
-      // отправляем заказ в систему (уведомление на ops + автоответ клиенту)
-      const r = await fetch("/api/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      // открываем PayPal в новой вкладке (оплата вручную подтверждается тобой)
-      if (paypal && Number(price) > 0) {
-  const numeric = String(price).replace(/[^\d.]/g, ""); // на всякий случай
-  const payUrl = `${paypal}/${numeric}${CURRENCY_CODE}`; // <-- добавили код валюты
-  window.open(payUrl, "_blank");
-}
+  const r = await fetch("/api/order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-      if (r.ok) {
-        push(`/thanks?lang=ru`);
-      } else {
-        setError((await r.text()) || "Ошибка отправки");
-      }
+  // открываем PayPal в новой вкладке (если есть цена)
+  if (paypal && Number(price) > 0) {
+    const numeric = String(price).replace(/[^\d.]/g, ""); // чистим цифры
+    const payUrl = `${paypal}/${numeric}${CURRENCY_CODE}`; // добавили валюту USD
+    window.open(payUrl, "_blank");
+  }
+
+  // успешный ответ сервера
+  if (r.ok) {
+    push(`/thanks?lang=ru`);
+  } else {
+    const txt = await r.text();
+    setError(txt || "Ошибка отправки");
+  }
+} catch (e) {
+  // если fetch оборвался (типичная ошибка при открытии PayPal)
+  const msg = String(e || "");
+  if (msg.includes("Failed to fetch") || msg.includes("Не удалось получить")) {
+    push(`/thanks?lang=ru`); // всё равно идём на страницу "Спасибо"
+    return;
+  }
+  setError(msg);
+}
     } catch (e) {
       setError(String(e));
     } finally {
@@ -135,6 +146,7 @@ export default function Order() {
     </section>
   );
 }
+
 
 
 
