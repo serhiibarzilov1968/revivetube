@@ -1,7 +1,6 @@
 // pages/order.js
 import { useRouter } from "next/router";
 import { useState } from "react";
-import Layout from "../components/Layout";
 
 // Валюта/PayPal — можно задать через Vercel → Environment Variables
 const CURRENCY_CODE =
@@ -90,7 +89,7 @@ export default function OrderPage() {
   const showPrompt = service === "audit" || service === "memo-shorts";
 
   return (
-    <Layout>
+    
       <section className="py-16">
         <div className="max-w-3xl mx-auto px-4">
           <h1 className="text-3xl font-bold">{title}</h1>
@@ -196,6 +195,7 @@ export default function OrderPage() {
           </form>
         </div>
       </section>
-    </Layout>
+    
   );
 }
+
