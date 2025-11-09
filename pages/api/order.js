@@ -6,14 +6,12 @@ const CURRENCY_CODE = process.env.NEXT_PUBLIC_CURRENCY_CODE || "USD";
 const fmt = (p) => `${CURRENCY_SIGN}${Number(p || 0).toFixed(2)} ${CURRENCY_CODE}`;
 
 const TITLES = {
-  // Базовые
-  audit: "Мемо-Shorts (ИИ-памятка)",          // бывший "Аудит канала"
+  audit: "Мемо-Shorts (ИИ-памятка)",
   "audit-pro": "Развёрнутый аудит (30 дней)",
   "memo-shorts": "Мемо-Shorts (ИИ-памятка)",
   shorts: "Шортс из вашего контента",
   video: "Работа с видео",
   manager: "Ведение (менеджер)",
-  // Доп. модули
   banner: "Новый баннер",
   logo: "Новый логотип",
   avatar: "Новый аватар",
@@ -28,7 +26,6 @@ const TITLES = {
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
   try {
-    // добавили prompt
     const {
       service = "audit",
       email,
@@ -39,7 +36,7 @@ export default async function handler(req, res) {
       lang = "ru",
       price = "",
       hp = "",
-      prompt = ""
+      prompt = "",
     } = req.body || {};
 
     // honeypot
@@ -89,16 +86,12 @@ STATUS: PENDING_PAYMENT`,
       replyTo: process.env.SMTP_USER,
     });
 
-    // --- Отправка в Google Sheets через Make.com webhook ---
+    // Отправка в Google Sheets через Make.com webhook (если настроен)
     try {
       if (process.env.GSHEET_WEBHOOK_URL) {
-        const headers = { "Content-Type": "application/json" };
-        // если хочешь простой секрет-ключ — добавь в Vercel WEBHOOK_KEY и раскомментируй:
-        // if (process.env.WEBHOOK_KEY) headers["X-RT-Key"] = process.env.WEBHOOK_KEY;
-
         await fetch(process.env.GSHEET_WEBHOOK_URL, {
           method: "POST",
-          headers,
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             timestamp: now,
             service, price, email, channel_url, video_url, brand_note, note, prompt,
@@ -110,14 +103,10 @@ STATUS: PENDING_PAYMENT`,
       console.error("GSHEET webhook failed:", e);
     }
 
-    // Редирект на спасибо
-    const base = process.env.NEXT_PUBLIC_SITE_URL || "";
-    const thanks = base ? `${base}/thanks?lang=${lang}` : `/thanks?lang=${lang}`;
-    res.setHeader("Location", thanks);
+    // Отдаём только JSON. Редирект на клиенте.
     return res.status(200).json({ ok: true, redirect: `/thanks?lang=${lang}` });
   } catch (e) {
     console.error(e);
     return res.status(500).send("Mail error");
   }
 }
-
